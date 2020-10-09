@@ -19,8 +19,8 @@ public:
     // should go on `this`.
     void Execute() { }
 
-    void Execute(std::string message) {
-        Callback().Call({Napi::String::New(Env(), message)});
+    void Execute(std::string topic, std::string message) {
+        Callback().Call({Napi::String::New(Env(), topic), Napi::String::New(Env(), message)});
     }
 
     // Executed when the async work is complete
@@ -39,7 +39,7 @@ void on_message(struct mosquitto *m, void *userdata, const struct mosquitto_mess
     for (const auto worker : onMessageWorker)
     {
         std::cout << ((char*) message->payload) << std::endl;
-        worker->Execute(std::string((char*) message->payload));
+        worker->Execute(std::string((char*) message->topic), std::string((char*) message->payload));
     }
 }
 

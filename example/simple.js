@@ -9,22 +9,8 @@ client.subscribe("#");
     //     console.log('done publish');
     // });
 
-client.on('message', (message) => {
-    console.log(`0: did receive a message ${message.toString()}`);
-    // client.publish('topic2', 'message', null, () => {
-    //     console.log('done publish');
-    // });
-});
-
-client.on('message', (message) => {
-    console.log(`1: did receive a message ${message.toString()}`);
-    // client.publish('topic2', 'message', null, () => {
-    //     console.log('done publish');
-    // });
-});
-
-client.on('message', (message) => {
-    console.log(`2: did receive a message ${message.toString()}`);
+client.on('message', (topic, message) => {
+    console.log(`1: did receive a ${topic.toString()} message ${message.toString()}`);
     // client.publish('topic2', 'message', null, () => {
     //     console.log('done publish');
     // });
