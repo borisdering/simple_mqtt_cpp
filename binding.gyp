@@ -15,7 +15,7 @@
         "/usr/local/include"
       ],
       "libraries": [
-        "/usr/local/lib/libmosquitto.dylib"
+        "-lmosquitto"
       ],
       'defines': [ 'NAPI_DISABLE_CPP_EXCEPTIONS' ],
     }
