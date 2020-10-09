@@ -7,7 +7,7 @@ let {
 } = require('../index');
 
 mosquitto_on_message((message) => {
-    console.log(`message called in simple js`);
+    console.log(`message called in simple js ${message}`);
 });
 mosquitto_init();
 

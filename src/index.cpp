@@ -20,7 +20,7 @@ public:
     void Execute() { }
 
     void Execute(std::string message) {
-        Callback().Call({Env().Undefined(), Napi::String::New(Env(), message)});
+        Callback().Call({Napi::String::New(Env(), message)});
     }
 
     // Executed when the async work is complete
@@ -37,7 +37,6 @@ AsyncWorker *onMessageWorker;
 void on_message(struct mosquitto *m, void *userdata, const struct mosquitto_message *message)
 {
     onMessageWorker->Execute(std::string((char*) message->payload));
-    // std::cout << "did receive a message " << (message->payload << std::endl;
 }
 
 Napi::Number init(const Napi::CallbackInfo &info)
