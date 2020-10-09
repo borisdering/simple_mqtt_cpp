@@ -38,6 +38,7 @@ void on_message(struct mosquitto *m, void *userdata, const struct mosquitto_mess
 {
     for (const auto worker : onMessageWorker)
     {
+        std::cout << ((char*) message->payload) << std::endl;
         worker->Execute(std::string((char*) message->payload));
     }
 }
