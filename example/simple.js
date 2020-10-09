@@ -10,7 +10,7 @@ client.subscribe("#");
     // });
 
 client.on('message', (topic, message) => {
-    console.log(`1: did receive a ${topic.toString()} message ${message.toString()}`);
+    console.log(`1: topic: '${topic.toString()}' message: '${message.toString()}'`);
     // client.publish('topic2', 'message', null, () => {
     //     console.log('done publish');
     // });

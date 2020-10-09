@@ -58,7 +58,7 @@ Napi::Number connect(const Napi::CallbackInfo &info)
 
     Napi::Env env = info.Env();
 
-    std::cout << "VERSION 0.0.2" << std::endl;
+    std::cout << "VERSION 0.0.3" << std::endl;
 
     Napi::String host = info[0].As<Napi::String>();
     Napi::Number port = info[1].As<Napi::Number>();
