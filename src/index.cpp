@@ -58,10 +58,8 @@ Napi::Number connect(const Napi::CallbackInfo &info)
     Napi::String host = info[0].As<Napi::String>();
     Napi::Number port = info[1].As<Napi::Number>();
 
-    char *id = "hackerman";
-
     // create a new mosquitto client instance.
-    mosq = mosquitto_new(id, true, NULL);
+    mosq = mosquitto_new(NULL, true, NULL);
     mosquitto_message_callback_set(mosq, on_message);
     int result = mosquitto_connect(mosq, std::string(host).c_str(), port.Int32Value(), 60);
 
@@ -88,9 +86,7 @@ Napi::Number subscribe(const Napi::CallbackInfo &info)
 
     // missing qos,....
 
-    std::cout << mosq << std::endl;
-
-    int result = mosquitto_subscribe(mosq, NULL, std::string(topic).c_str(), 0);
+    int result = mosquitto_subscribe(mosq, NULL, std::string(topic).c_str(), 2);
 
     return Napi::Number::New(env, result);
 }
@@ -103,7 +99,7 @@ Napi::Number publish(const Napi::CallbackInfo &info)
     Napi::String topic = info[0].As<Napi::String>();
     Napi::String payload = info[0].As<Napi::String>();
 
-    int result = mosquitto_publish(mosq, NULL, std::string(topic).c_str(), std::string(payload).length(), std::string(payload).c_str(), 0, false);
+    int result = mosquitto_publish(mosq, NULL, std::string(topic).c_str(), std::string(payload).length(), std::string(payload).c_str(), 2, false);
 
     return Napi::Number::New(env, result);
 }
@@ -113,7 +109,7 @@ Napi::Number loop(const Napi::CallbackInfo &info)
 
     Napi::Env env = info.Env();
 
-    int result = mosquitto_loop(mosq, 0, 100);
+    int result = mosquitto_loop(mosq, -1, 1);
 
     return Napi::Number::New(env, result);
 }
