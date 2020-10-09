@@ -57,7 +57,7 @@ Napi::Number connect(const Napi::CallbackInfo &info)
 
     Napi::Env env = info.Env();
 
-    std::cout << "VERSION 0.0.1" << std::endl;
+    std::cout << "VERSION 0.0.2" << std::endl;
 
     Napi::String host = info[0].As<Napi::String>();
     Napi::Number port = info[1].As<Napi::Number>();
@@ -101,9 +101,11 @@ Napi::Number publish(const Napi::CallbackInfo &info)
     Napi::Env env = info.Env();
 
     Napi::String topic = info[0].As<Napi::String>();
-    Napi::String payload = info[0].As<Napi::String>();
+    Napi::String payload = info[1].As<Napi::String>();
 
-    int result = mosquitto_publish(mosq, NULL, std::string(topic).c_str(), std::string(payload).length(), std::string(payload).c_str(), 2, false);
+    std::string message = std::string(payload);
+
+    int result = mosquitto_publish(mosq, NULL, std::string(topic).c_str(), message.length(), message.c_str(), 2, false);
 
     return Napi::Number::New(env, result);
 }
