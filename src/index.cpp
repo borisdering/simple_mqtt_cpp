@@ -47,14 +47,23 @@ Napi::Number init(const Napi::CallbackInfo &info)
 
     int result = mosquitto_lib_init();
 
-    char *id = "some_id";
-    std::string host = "localhost";
-    int port = 1883;
+    return Napi::Number::New(env, result);
+}
+
+Napi::Number connect(const Napi::CallbackInfo &info)
+{
+
+    Napi::Env env = info.Env();
+
+    Napi::String host = info[0].As<Napi::String>();
+    Napi::Number port = info[1].As<Napi::Number>();
+
+    char *id = "hackerman";
 
     // create a new mosquitto client instance.
-    mosq = mosquitto_new(id, true, (void *)&info);
-    mosquitto_connect(mosq, host.c_str(), port, 60);
+    mosq = mosquitto_new(id, true, NULL);
     mosquitto_message_callback_set(mosq, on_message);
+    int result = mosquitto_connect(mosq, std::string(host).c_str(), port.Int32Value(), 60);
 
     return Napi::Number::New(env, result);
 }
@@ -116,6 +125,10 @@ Napi::Object Init(Napi::Env env, Napi::Object exports)
     exports.Set(
         Napi::String::New(env, "mosquitto_init"),
         Napi::Function::New(env, init));
+
+    exports.Set(
+        Napi::String::New(env, "mosquitto_connect"),
+        Napi::Function::New(env, connect));
 
     exports.Set(
         Napi::String::New(env, "mosquitto_subscribe"),
