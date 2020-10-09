@@ -1,7 +1,7 @@
 #include "napi.h"
 #include <string>
 #include <iostream>
-#include "greeting.h"
+#include <vector>
 #include "mosquitto.h"
 
 struct mosquitto *mosq;
@@ -32,12 +32,14 @@ public:
     }
 };
 
-AsyncWorker *onMessageWorker;
+std::vector<AsyncWorker*> onMessageWorker;
 
 void on_message(struct mosquitto *m, void *userdata, const struct mosquitto_message *message)
 {
-    if (onMessageWorker) 
-        onMessageWorker->Execute(std::string((char*) message->payload));
+    for (const auto worker : onMessageWorker)
+    {
+        worker->Execute(std::string((char*) message->payload));
+    }
 }
 
 Napi::Number init(const Napi::CallbackInfo &info)
@@ -73,7 +75,7 @@ void message(const Napi::CallbackInfo &info)
 
     Napi::Function callback = info[0].As<Napi::Function>();
 
-    onMessageWorker = new AsyncWorker(callback);
+    onMessageWorker.push_back(new AsyncWorker(callback));
 }
 
 Napi::Number subscribe(const Napi::CallbackInfo &info)
