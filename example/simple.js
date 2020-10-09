@@ -3,7 +3,7 @@ let {
     mosquitto_loop, 
     mosquitto_on_message, 
     mosquitto_subscribe 
-} = require('../build/Release/mosquittopp.node');
+} = require('../index');
 
 mosquitto_on_message((message) => {
     console.log(`message called in simple js`);

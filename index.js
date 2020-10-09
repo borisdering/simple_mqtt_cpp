@@ -1,2 +1,1 @@
-let { greet } = require('./build/Release/mosquittopp.node');
-module.exports = greet;
+module.exports = require('./build/Release/mosquittopp.node');
