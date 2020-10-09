@@ -36,7 +36,8 @@ AsyncWorker *onMessageWorker;
 
 void on_message(struct mosquitto *m, void *userdata, const struct mosquitto_message *message)
 {
-    onMessageWorker->Execute(std::string((char*) message->payload));
+    if (onMessageWorker) 
+        onMessageWorker->Execute(std::string((char*) message->payload));
 }
 
 Napi::Number init(const Napi::CallbackInfo &info)
@@ -86,6 +87,8 @@ Napi::Number subscribe(const Napi::CallbackInfo &info)
     // Napi::Number qos = info[0].As<Napi::Number>();
 
     // missing qos,....
+
+    std::cout << mosq << std::endl;
 
     int result = mosquitto_subscribe(mosq, NULL, std::string(topic).c_str(), 0);
 

@@ -1,21 +1,9 @@
-let { 
-    mosquitto_init, 
-    mosquitto_loop, 
-    mosquitto_on_message, 
-    mosquitto_subscribe,
-    mosquitto_connect 
-} = require('../index');
+let some = require('../index');
 
-mosquitto_on_message((message) => {
-    console.log(`message called in simple js ${message}`);
+let client = some.connect('mqtt://localhost:1883');
+
+client.subscribe("#");
+
+client.on('message', (message) => {
+    console.log(`did receive a message ${message}`);
 });
-mosquitto_init();
-
-mosquitto_connect("localhost", 1883);
-
-mosquitto_subscribe("#");
-
-
-setInterval(() => {
-    mosquitto_loop();
-}, 10);
