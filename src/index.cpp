@@ -39,6 +39,7 @@ void on_message(struct mosquitto *m, void *userdata, const struct mosquitto_mess
     for (const auto worker : onMessageWorker)
     {
         std::cout << ((char*) message->payload) << std::endl;
+        std::cout << "MOSQUITTOPP: NEW MESSAGE TOPIC:'" << ((void*) message->topic) << "' MESSAGE:'" << ((void*) message->payload) << "'" << std::endl;
         worker->Execute(std::string((char*) message->topic), std::string((char*) message->payload));
     }
 }
@@ -91,6 +92,8 @@ Napi::Number subscribe(const Napi::CallbackInfo &info)
 
     // missing qos,....
 
+    std::cout << "MOSQUITTOPP: SUBSCRIBE TOPIC:'" << topic << "'" << std::endl;
+
     int result = mosquitto_subscribe(mosq, NULL, std::string(topic).c_str(), 2);
 
     return Napi::Number::New(env, result);
@@ -103,6 +106,8 @@ Napi::Number publish(const Napi::CallbackInfo &info)
 
     Napi::String topic = info[0].As<Napi::String>();
     Napi::String payload = info[1].As<Napi::String>();
+
+    std::cout << "MOSQUITTOPP: PUBLISH TOPIC:'" << topic << "' MESSAGE:'" << payload << "'" << std::endl;
 
     std::string message = std::string(payload);
 
