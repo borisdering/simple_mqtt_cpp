@@ -38,7 +38,7 @@ const connect = (href) => {
             }
         },
         publish: (topic, message, options, callback = () => {}) => {
-            mosquitto_publish(topic, message);
+            mosquitto_publish(topic, message, options.retain);
             callback();
         },
         subscribe: (topic, options, callback = () => {}) => {

@@ -6,6 +6,8 @@
 
 struct mosquitto *mosq;
 
+#define DEFAULT_QOS 0
+
 class AsyncWorker : Napi::AsyncWorker
 {
 public:
@@ -94,7 +96,7 @@ Napi::Number subscribe(const Napi::CallbackInfo &info)
 
     std::cout << "NODE: MOSQUITTOPP: SUBSCRIBE TOPIC:'" << topic << "'" << std::endl;
 
-    int result = mosquitto_subscribe(mosq, NULL, std::string(topic).c_str(), 2);
+    int result = mosquitto_subscribe(mosq, NULL, std::string(topic).c_str(), DEFAULT_QOS);
 
     return Napi::Number::New(env, result);
 }
@@ -106,12 +108,13 @@ Napi::Number publish(const Napi::CallbackInfo &info)
 
     Napi::String topic = info[0].As<Napi::String>();
     Napi::String payload = info[1].As<Napi::String>();
+    Napi::Boolean retained = info[2].As<Napi::Boolean>();
 
     std::cout << "NODE: MOSQUITTOPP: PUBLISH TOPIC:'" << topic << "' MESSAGE:'" << payload << "'" << std::endl;
 
     std::string message = std::string(payload);
 
-    int result = mosquitto_publish(mosq, NULL, std::string(topic).c_str(), message.length(), message.c_str(), 2, false);
+    int result = mosquitto_publish(mosq, NULL, std::string(topic).c_str(), message.length(), message.c_str(), DEFAULT_QOS, retained);
 
     return Napi::Number::New(env, result);
 }
