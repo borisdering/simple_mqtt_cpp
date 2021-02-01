@@ -2,7 +2,7 @@
 #include <iostream>
 #include <thread>
 #include "mosquitto.h"
-#include "Client.h"
+#include "client.h"
 
 /**
  * Simple C static on connect callback wrapper.
@@ -15,11 +15,11 @@
  *  2 - connection refused (identifier rejected)
  *  3 - connection refused (broker unavailable)
  */
-static void onConnect(struct mosquitto* mosq, void *userdata, int rc) {
+static void on_connect(struct mosquitto* mosq, void *userdata, int rc) {
 
     // due to the fact that we receive the context
     // we try to call the actual callback.
-    class Client *c = (class Client*) userdata;
+    class client *c = (class client*) userdata;
 
     std::function<void()> f_display_42 = []() { std::cout << "subscribed" << std::endl; };
 
@@ -32,7 +32,7 @@ static void onConnect(struct mosquitto* mosq, void *userdata, int rc) {
  * @param userdata
  * @param message
  */
-void onMessage(struct mosquitto *mosq, void *userdata, const struct mosquitto_message *message) {
+void on_message(struct mosquitto *mosq, void *userdata, const struct mosquitto_message *message) {
 
     // due to the fact that we receive the context
     // we try to call the actual callback.
@@ -43,7 +43,7 @@ void onMessage(struct mosquitto *mosq, void *userdata, const struct mosquitto_me
     std::cout << "on message: " << payload << std::endl;
 }
 
-Client::Client(std::string host, int port) {
+client::client(std::string host, int port) {
 
     // must be called before any other mosquitto functions.
     int result = mosquitto_lib_init();
@@ -52,53 +52,52 @@ Client::Client(std::string host, int port) {
     // if (result != 0)
     //     throw new std::runtime_error("unable to initilaize mosquitto library");
 
-    this->m_id = "hackerman";
-    this->m_topic = "client";
-    this->m_host = host;
-    this->m_port = port;
+    this->id = "hackerman";
+    this->topic = "client";
+    this->host = host;
+    this->port = port;
 
     // create a new mosquitto client instance.
-    this->m_mosq = mosquitto_new(this->m_id.c_str(), true, this);
+    this->mosquitto = mosquitto_new(this->id.c_str(), true, this);
 
     // Used to tell the library that your application is using threads, but not
     // using <mosquitto_loop_start>. The library operates slightly differently when
     // not in threaded mode in order to simplify its operation. If you are managing
     // your own threads and do not use this function you will experience crashes
     // due to race conditions.
-    mosquitto_threaded_set(this->m_mosq, true);
+    mosquitto_threaded_set(this->mosquitto, true);
 
     // connect to an MQTT broker and set on connect callback
-    mosquitto_connect_callback_set(this->m_mosq, onConnect);
-    
-    
-    mosquitto_loop_start(this->m_mosq);
+    mosquitto_connect_callback_set(this->mosquitto, on_connect);
 
-    mosquitto_connect_async(this->m_mosq, this->m_host.c_str(), this->m_port, Client::keepalive);
+    mosquitto_loop_start(this->mosquitto);
+
+    mosquitto_connect_async(this->mosquitto, this->host.c_str(), this->port, client::keepalive);
 
     // Set the message callback. This is called when a message is received from the
     // broker.
-    mosquitto_message_callback_set(this->m_mosq, onMessage);
+    mosquitto_message_callback_set(this->mosquitto, on_message);
 }
 
 /**
  * Start listening to messages. 
  */
-void Client::start() {
+void client::start() {
 
     std::thread main([](struct mosquitto* mosq){
 
         // mosquitto_loop_start(mosq);
         // mosquitto_loop_forever(mosq, 5, 100);
         // mosquitto_
-    }, this->m_mosq);
+    }, this->mosquitto);
 
     main.join();
 }
 
-void Client::subscribe(std::string topic, int qos, std::function<void()> callback) {
+void client::subscribe(std::string topic, int qos, std::function<void()> callback) {
 
     // subscribe to a topic.
-    mosquitto_subscribe(this->m_mosq, NULL, topic.c_str(), qos);
+    mosquitto_subscribe(this->mosquitto, NULL, topic.c_str(), qos);
 }
 
 //Client::~Client() {

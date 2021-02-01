@@ -1,23 +1,24 @@
 #include "mosquitto.h"
 #include <string>
+#include <functional>
 
 #ifndef CLIENT_H
 #define CLIENT_H
 
-class Client {
+class client {
 private:
 
-    std::string m_id;
-    std::string m_topic;
-    std::string m_host;
-    int m_port;
+    std::string id;
+    std::string topic;
+    std::string host;
+    int port;
 
-    struct mosquitto *m_mosq;
+    struct mosquitto *mosquitto;
 
     static const int keepalive = 60;
 
 public:
-    Client(std::string host, int port);
+    client(std::string host, int port);
 
     void start();
 
